@@ -1,0 +1,19 @@
+# системный мусор
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# редакторы
+.vscode/
+.idea/
+
+# временные профили браузера и скриншот-сессии
+.chrome_desktop/
+.chrome_mobile/
+.cp_shot_*/
+node_modules/
+
+# секреты — никогда не коммитим
+.env
+.env.*
+*.log
