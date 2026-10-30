@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Лере — с поддержкой</title>
-<meta name="description" content="Открытка для Леры: нейроптица ошибается, Лера — отличный менеджер.">
+<title>Лера — с поддержкой</title>
+<meta id="metaDesc" name="description" content="Открытка для Леры: нейроптица ошибается, Лера — отличный менеджер.">
 <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐦</text></svg>">
 <style>
   :root{
@@ -384,6 +384,75 @@
     font-weight:600;
   }
   .btn-link:hover{color:#fff}
+  .btn-sm{padding:10px 18px;font-size:14px}
+
+  /* ---------- смена имени ---------- */
+  .foot-end{display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap}
+
+  .btn-name{
+    background:none;
+    color:var(--muted);
+    border:1px solid rgba(255,255,255,.14);
+    padding:6px 12px;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.02em;
+  }
+  .btn-name:hover{color:#fff;border-color:rgba(255,255,255,.32);background:rgba(255,255,255,.06)}
+  .btn-name[aria-expanded="true"]{color:#fff;border-color:rgba(255,209,102,.55);background:rgba(255,209,102,.1)}
+
+  .name-form{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    margin-top:20px;
+    padding:14px 16px;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:16px;
+    background:rgba(255,255,255,.04);
+    animation:panelIn .28s ease both;
+  }
+  .name-form[hidden]{display:none}
+  .name-form label{
+    font-size:11px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .name-form input{
+    flex:1 1 180px;
+    min-width:130px;
+    padding:11px 16px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(0,0,0,.34);
+    color:var(--ink);
+    font:inherit;
+    font-size:15px;
+  }
+  .name-form input::placeholder{color:rgba(163,170,205,.7)}
+  .name-form input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .name-tip{
+    flex:1 1 100%;
+    margin:2px 0 0;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.5;
+  }
+  .name-tip code{color:var(--accent);font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+  .name-hint{
+    margin:14px 0 0;
+    color:var(--accent);
+    font-size:12.5px;
+    line-height:1.5;
+  }
+  .name-hint[hidden]{display:none}
+
+  @keyframes panelIn{
+    from{opacity:0;transform:translateY(-6px)}
+    to{opacity:1;transform:none}
+  }
 
   /* ---------- подвал ---------- */
   .foot{
@@ -428,6 +497,9 @@
     .steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
     .step{padding:10px 12px}
     .actions button{flex:1 1 auto}
+    .name-form{padding:12px;gap:8px}
+    .name-form input{flex-basis:100%}
+    .name-form button{flex:1 1 auto}
     .foot{flex-direction:column}
   }
 
@@ -526,7 +598,7 @@
   </div>
 
   <h1 class="reveal" data-reveal>
-    Лера, ты — <span class="grad">отличный менеджер.</span>
+    <span data-name>Лера</span>, ты — <span class="grad">отличный менеджер.</span>
   </h1>
 
   <p class="lead reveal" data-reveal>
@@ -560,15 +632,39 @@
     <button class="btn-link" id="replayBtn" type="button">↻ повторить</button>
   </div>
 
+  <form class="name-form" id="nameForm" hidden>
+    <label for="nameInput">Кому открытка</label>
+    <input id="nameInput" name="name" type="text" maxlength="40" autocomplete="off"
+           spellcheck="false" placeholder="Юля, Дима…" enterkeyhint="done">
+    <button class="btn-main btn-sm" type="submit">Сохранить имя</button>
+    <button class="btn-link btn-sm" id="nameCancel" type="button">Отмена</button>
+    <p class="name-tip">Или открой открытку ссылкой с <code>?name=Юля</code> — имя подставится само.</p>
+  </form>
+
+  <p class="name-hint" id="nameHint" role="status" hidden></p>
+
   <div class="foot reveal" data-reveal>
     <span>Сделано вручную, без единого нейросетевого осуждения.</span>
-    <span class="score">Нейроптица <b>0</b> · Лера <b>1</b></span>
+    <span class="foot-end">
+      <span class="score">Нейроптица <b>0</b> · <span data-name>Лера</span> <b>1</b></span>
+      <button class="btn-name" id="nameBtn" type="button" aria-expanded="false" aria-controls="nameForm"
+              title="Сменить имя получателя">сменить имя</button>
+    </span>
   </div>
 </main>
 
 <script>
 (function () {
   "use strict";
+
+  /* ─────────────── настройки открытки ───────────────
+     Имя получателя по умолчанию. Менять код не обязательно:
+     • ссылка ?name=Юля (или ?to=Юля) ставит имя сама;
+     • кнопка «сменить имя» в подвале — без перезагрузки страницы.
+     Всё остальное — номинатив, поэтому подходит любое имя. */
+  var CARD = {
+    name: "Лера"
+  };
 
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -584,6 +680,91 @@
   var confettiBtn = $("#confettiBtn");
   var replayBtn = $("#replayBtn");
   var revealEls = Array.prototype.slice.call(document.querySelectorAll("[data-reveal]"));
+
+  var nameBtn = $("#nameBtn");
+  var nameForm = $("#nameForm");
+  var nameInput = $("#nameInput");
+  var nameCancel = $("#nameCancel");
+  var nameHint = $("#nameHint");
+  var nameNodes = Array.prototype.slice.call(document.querySelectorAll("[data-name]"));
+
+  /* ---------- имя ---------- */
+  function cleanName(raw) {
+    return String(raw == null ? "" : raw)
+      .replace(/[\u0000-\u001f\u007f]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 40);
+  }
+
+  function defaultName() {
+    return cleanName(CARD.name) || "Лера";
+  }
+
+  function nameFromUrl() {
+    try {
+      var q = new URLSearchParams(window.location.search);
+      return cleanName(q.get("name") || q.get("to"));
+    } catch (e) {
+      return "";
+    }
+  }
+
+  var currentName = nameFromUrl() || defaultName();
+  var bubbleMood = "bad";
+  var hintTimer = 0;
+
+  function setBubble() {
+    bubbleText.textContent = currentName +
+      (bubbleMood === "good" ? " — молодец. И точка." : " — плохой менеджер");
+  }
+
+  function applyName(name) {
+    currentName = name;
+    for (var i = 0; i < nameNodes.length; i++) nameNodes[i].textContent = name;
+    document.title = name + " — с поддержкой";
+    var desc = $("#metaDesc");
+    if (desc) {
+      desc.setAttribute("content",
+        name + ": нейроптица ошибается, а ты — отличный менеджер. Открытка с именем в ссылке.");
+    }
+    if (nameInput) nameInput.value = name;
+    setBubble();
+  }
+
+  function rememberName(name) {
+    try {
+      var url = new URL(window.location.href);
+      if (name === defaultName()) url.searchParams.delete("name");
+      else url.searchParams.set("name", name);
+      window.history.replaceState(null, "", url.href);
+      return true;
+    } catch (e) {
+      return false; /* file:// — история может быть недоступна */
+    }
+  }
+
+  function openNamePanel() {
+    nameForm.hidden = false;
+    nameBtn.setAttribute("aria-expanded", "true");
+    nameInput.value = currentName;
+    nameInput.focus();
+    nameInput.select();
+  }
+
+  function closeNamePanel() {
+    nameForm.hidden = true;
+    nameBtn.setAttribute("aria-expanded", "false");
+  }
+
+  function flashHint(text) {
+    nameHint.textContent = text;
+    nameHint.hidden = false;
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function () { nameHint.hidden = true; }, 6500);
+  }
+
+  applyName(currentName);
 
   /* ---------- звёзды ---------- */
   (function stars() {
@@ -725,7 +906,9 @@
     stamp.classList.remove("on", "off", "good");
     stamp.textContent = "неправда";
     bubble.classList.remove("show", "shake");
-    bubbleText.textContent = "Лера — плохой менеджер";
+    bubbleMood = "bad";
+    setBubble();
+    patBtn.textContent = "Погладить нейроптицу";
 
     hideReveals();
     at(80, revealAll);
@@ -761,7 +944,8 @@
     bird.classList.add("happy");
     bubble.classList.add("show");
     bubble.classList.remove("shake");
-    bubbleText.textContent = "Лера — молодец. И точка.";
+    bubbleMood = "good";
+    setBubble();
     stamp.textContent = "точно";
     stamp.classList.add("good");
     stamp.classList.remove("off");
@@ -782,9 +966,45 @@
     burst(window.innerWidth * 0.8, window.innerHeight * 0.7, 40, 0.9);
   });
 
-  replayBtn.addEventListener("click", function () {
-    patBtn.textContent = "Погладить нейроптицу";
+  replayBtn.addEventListener("click", playScene);
+
+  /* ---------- смена имени ---------- */
+  nameBtn.addEventListener("click", function () {
+    if (nameForm.hidden) openNamePanel();
+    else { closeNamePanel(); nameBtn.focus(); }
+  });
+
+  nameCancel.addEventListener("click", function () {
+    closeNamePanel();
+    nameBtn.focus();
+  });
+
+  nameForm.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeNamePanel();
+      nameBtn.focus();
+    }
+  });
+
+  nameForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var next = cleanName(nameInput.value) || defaultName();
+    closeNamePanel();
+    nameBtn.focus();
+
+    if (next === currentName) {
+      flashHint("Имя не изменилось: в открытке по-прежнему " + currentName + ".");
+      return;
+    }
+
+    applyName(next);
+    bubbleMood = "bad";
     playScene();
+    var saved = rememberName(next);
+    flashHint(saved
+      ? "Готово: в открытке теперь " + next + ". Имя записано в адрес страницы."
+      : "Готово: в открытке теперь " + next + ".");
   });
 
   /* старт */
