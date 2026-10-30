@@ -403,8 +403,8 @@
 
   .name-form{
     display:flex;
-    flex-wrap:wrap;
-    align-items:center;
+    flex-direction:column;
+    align-items:stretch;
     gap:10px;
     margin-top:20px;
     padding:14px 16px;
@@ -414,6 +414,8 @@
     animation:panelIn .28s ease both;
   }
   .name-form[hidden]{display:none}
+  .name-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .name-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
   .name-form label{
     font-size:11px;
     letter-spacing:.15em;
@@ -434,8 +436,7 @@
   .name-form input::placeholder{color:rgba(163,170,205,.7)}
   .name-form input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
   .name-tip{
-    flex:1 1 100%;
-    margin:2px 0 0;
+    margin:0;
     color:var(--muted);
     font-size:12px;
     line-height:1.5;
@@ -633,12 +634,17 @@
   </div>
 
   <form class="name-form" id="nameForm" hidden>
-    <label for="nameInput">Кому открытка</label>
-    <input id="nameInput" name="name" type="text" maxlength="40" autocomplete="off"
-           spellcheck="false" placeholder="Юля, Дима…" enterkeyhint="done">
-    <button class="btn-main btn-sm" type="submit">Сохранить имя</button>
-    <button class="btn-link btn-sm" id="nameCancel" type="button">Отмена</button>
-    <p class="name-tip">Или открой открытку ссылкой с <code>?name=Юля</code> — имя подставится само.</p>
+    <div class="name-row">
+      <label for="nameInput">Кому открытка</label>
+      <input id="nameInput" name="name" type="text" maxlength="40" autocomplete="off"
+             spellcheck="false" placeholder="Юля, Дима…" enterkeyhint="done">
+    </div>
+    <div class="name-actions">
+      <button class="btn-main btn-sm" type="submit">Сохранить имя</button>
+      <button class="btn-ghost btn-sm" id="downloadBtn" type="button">Скачать копию</button>
+      <button class="btn-link btn-sm" id="nameCancel" type="button">Отмена</button>
+    </div>
+    <p class="name-tip">Ссылкой: <code>?name=Юля</code> — имя подставится само. Или «Скачать копию»: получится отдельный HTML-файл с этим именем — его можно отправить как есть.</p>
   </form>
 
   <p class="name-hint" id="nameHint" role="status" hidden></p>
@@ -686,6 +692,7 @@
   var nameInput = $("#nameInput");
   var nameCancel = $("#nameCancel");
   var nameHint = $("#nameHint");
+  var downloadBtn = $("#downloadBtn");
   var nameNodes = Array.prototype.slice.call(document.querySelectorAll("[data-name]"));
 
   /* ---------- имя ---------- */
@@ -762,6 +769,108 @@
     nameHint.hidden = false;
     clearTimeout(hintTimer);
     hintTimer = setTimeout(function () { nameHint.hidden = true; }, 6500);
+  }
+
+  /* ---------- копия файлом ---------- */
+  function jsString(value) {
+    return JSON.stringify(value).replace(/<\//g, "<\\/");
+  }
+
+  function giftFileName(name) {
+    var safe = name.replace(/[\\/:*?"<>|]+/g, "-").replace(/\s+/g, " ").trim();
+    return "otkrytka-" + (safe || "copy") + ".html";
+  }
+
+  function buildGiftHtml(name) {
+    var root = document.documentElement.cloneNode(true);
+
+    var cardEl = root.querySelector(".card");
+    if (cardEl) cardEl.classList.remove("focused");
+
+    var wrap = root.querySelector("#birdWrap");
+    if (wrap) wrap.className = "bird-wrap hidden";
+    var birdEl = root.querySelector("#bird");
+    if (birdEl) birdEl.classList.remove("happy");
+
+    var bubbleEl = root.querySelector("#bubble");
+    if (bubbleEl) bubbleEl.className = "bubble";
+    var bubbleTxt = root.querySelector("#bubbleText");
+    if (bubbleTxt) bubbleTxt.textContent = name + " — плохой менеджер";
+
+    var stampEl = root.querySelector("#stamp");
+    if (stampEl) { stampEl.className = "stamp"; stampEl.textContent = "неправда"; }
+
+    var starsEl = root.querySelector("#stars");
+    if (starsEl) starsEl.innerHTML = "";
+    var fxEl = root.querySelector("#fx");
+    if (fxEl) {
+      fxEl.removeAttribute("width");
+      fxEl.removeAttribute("height");
+      fxEl.removeAttribute("style");
+    }
+
+    var reveals = root.querySelectorAll("[data-reveal]");
+    for (var i = 0; i < reveals.length; i++) {
+      reveals[i].classList.remove("on");
+      reveals[i].removeAttribute("style");
+    }
+
+    var hearts = root.querySelectorAll(".heart");
+    for (var h = hearts.length - 1; h >= 0; h--) hearts[h].parentNode.removeChild(hearts[h]);
+
+    var form = root.querySelector("#nameForm");
+    if (form) form.setAttribute("hidden", "");
+    var hint = root.querySelector("#nameHint");
+    if (hint) { hint.setAttribute("hidden", ""); hint.textContent = ""; }
+    var btn = root.querySelector("#nameBtn");
+    if (btn) btn.setAttribute("aria-expanded", "false");
+
+    var names = root.querySelectorAll("[data-name]");
+    for (var n = 0; n < names.length; n++) names[n].textContent = name;
+
+    var titleEl = root.querySelector("title");
+    if (titleEl) titleEl.textContent = name + " — с поддержкой";
+    var descEl = root.querySelector("#metaDesc");
+    if (descEl) {
+      descEl.setAttribute("content",
+        name + ": нейроптица ошибается, а ты — отличный менеджер.");
+    }
+
+    var scripts = root.querySelectorAll("script");
+    for (var s = 0; s < scripts.length; s++) {
+      var src = scripts[s].textContent;
+      if (src.indexOf("var CARD") !== -1) {
+        scripts[s].textContent = src.replace(
+          /(var CARD = \{\s*name:\s*)"(?:[^"\\]|\\.)*"/,
+          function (match, prefix) { return prefix + jsString(name); }
+        );
+      }
+    }
+
+    return "<!doctype html>\n" + root.outerHTML;
+  }
+
+  function downloadGift() {
+    var name = cleanName(nameInput.value) || currentName;
+    var fileName = giftFileName(name);
+    var blob = new Blob([buildGiftHtml(name)], { type: "text/html;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+
+    closeNamePanel();
+    if (name !== currentName) {
+      applyName(name);
+      bubbleMood = "bad";
+      playScene();
+      rememberName(name);
+    }
+    flashHint("Скачано: " + fileName + " — файл самодостаточный, внутри уже " + name + ".");
   }
 
   applyName(currentName);
@@ -978,6 +1087,8 @@
     closeNamePanel();
     nameBtn.focus();
   });
+
+  downloadBtn.addEventListener("click", downloadGift);
 
   nameForm.addEventListener("keydown", function (e) {
     if (e.key === "Escape") {
