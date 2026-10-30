@@ -40,7 +40,13 @@ var CARD = {
 
 ## Про GitHub Pages
 
-Ссылка вида `https://…/otkrytka-lera/?name=Юля` работает, только если включён Pages. Для приватного репозитория бесплатный GitHub Pages недоступен (`Your current plan does not support GitHub Pages for this repository`); для публичного он включается в Settings → Pages → Deploy from a branch: `main`, `/`.
+Открытка опубликована и доступна по ссылке:
+
+- для Леры: https://elizavetakazakova19-hue.github.io/dipasika/otkrytka-lera/
+- для Юли: https://elizavetakazakova19-hue.github.io/dipasika/otkrytka-lera/?name=Юля
+- витрина всех проектов: https://elizavetakazakova19-hue.github.io/dipasika/
+
+Pages собирается из ветки `main` при каждом пуше (Settings → Pages → Deploy from a branch: `main`, `/`). Для Pages репозиторий должен быть публичным — он публичный.
 
 ## Что внутри
 
