@@ -1,5 +1,31 @@
 /* Шаблоны мемов: панели, подписи и заготовки реплик для ботов.
    botLines — по одной реплике на каждую подпись шаблона. */
+const BOT_PAIRS = [
+  ['Ожидание', 'Реальность'],
+  ['План', 'Факт'],
+  ['До кофе', 'После кофе'],
+  ['Понедельник', 'Пятница'],
+  ['Я', 'Мой код'],
+  ['Начальник', 'Задача'],
+  ['Обещал', 'Сделал'],
+  ['Хотел', 'Получилось'],
+  ['В теории', 'На практике'],
+  ['Утро', 'Вечер']
+];
+
+const BOT_SINGLE = [
+  ['Когда всё пошло не по плану'],
+  ['Я после планёрки'],
+  ['Мой план на день'],
+  ['Когда сказали «быстро»'],
+  ['Я и дедлайн'],
+  ['Это нормально'],
+  ['Всё под контролем'],
+  ['Так и задумано'],
+  ['Я не виноват'],
+  ['Мне всё равно']
+];
+
 window.TEMPLATES = [
   {
     id: 'drake',
@@ -287,5 +313,207 @@ window.TEMPLATES = [
       ['Это официально'],
       ['Проверено юристами']
     ]
+  },
+  {
+    id: 'schwarzenegger',
+    title: 'Шварценеггер',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/02f186c797fcc1db6ef89ef0f58bea2d.jpg',
+    emoji: '💪',
+    colors: ['#3f3f46', '#111827'],
+    tip: 'Суровый взгляд и две подписи.',
+    slots: [
+      { label: 'Верхняя подпись', position: 'top' },
+      { label: 'Нижняя подпись', position: 'bottom' }
+    ],
+    botLines: BOT_PAIRS
+  },
+  {
+    id: 'scientist',
+    title: 'Учёный',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/aec62dc38b283b25fbdd913e48201733.jpg',
+    emoji: '👨‍🔬',
+    colors: ['#065f46', '#22c55e'],
+    tip: 'Я и сам своего рода учёный.',
+    slots: [
+      { label: 'Верхняя подпись', position: 'top' },
+      { label: 'Нижняя подпись', position: 'bottom' }
+    ],
+    botLines: BOT_PAIRS
+  },
+  {
+    id: 'mustache',
+    title: 'Суровый мужик',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/a6707d167cde785e43d979c46e7eb829.jpg',
+    emoji: '🥸',
+    colors: ['#78350f', '#f59e0b'],
+    tip: 'Одна подпись — как приговор.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'thinker',
+    title: 'Рисовач',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/a237c7dfc28cdd45a66eafabe4c27732.jpg',
+    emoji: '🤔',
+    colors: ['#312e81', '#8b5cf6'],
+    tip: 'О чём человек задумался.',
+    slots: [{ label: 'Мысль', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'dogtoy',
+    title: 'Пёс и игрушка',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/f07c2ed5853d46658762db170834501f.jpg',
+    emoji: '🐶',
+    colors: ['#9a3412', '#f97316'],
+    tip: 'Что происходит у собаки.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'cinema',
+    title: 'Смеющийся в кино',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/2c6434d7053344e7c4c6506d5fa70f14.jpg',
+    emoji: '😂',
+    colors: ['#7f1d1d', '#ef4444'],
+    tip: 'Над чем смеётся зал.',
+    slots: [{ label: 'Над чем смеётся', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'cats',
+    title: 'Коты за столом',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/4d51a39d155323a991c743bc76af8048.jpg',
+    emoji: '🐱',
+    colors: ['#0f766e', '#14b8a6'],
+    tip: 'Что обсуждают коты.',
+    slots: [{ label: 'Реплика кота', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'handshake',
+    title: 'Рукопожатие',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/6b20a059aaf6f935e6305f87de8d2578.jpg',
+    emoji: '🤝',
+    colors: ['#1e3a8a', '#3b82f6'],
+    tip: 'Договорились? Договорились.',
+    slots: [
+      { label: 'Первый участник', position: 'top' },
+      { label: 'Второй участник', position: 'bottom' }
+    ],
+    botLines: BOT_PAIRS
+  },
+  {
+    id: 'bleat',
+    title: 'Блеат',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/5cd48e936d32b96fa61178fe617b7533.jpg',
+    emoji: '😬',
+    colors: ['#334155', '#94a3b8'],
+    tip: 'Когда не сдержался.',
+    slots: [{ label: 'Реплика', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'walken',
+    title: 'Уокен',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/e0e08b43bea14015468b14edb32e34cb.jpg',
+    emoji: '🕴️',
+    colors: ['#422006', '#a16207'],
+    tip: 'Что говорит человек с лицом Уокена.',
+    slots: [{ label: 'Реплика', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'fring',
+    title: 'Гус Фринг',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/095dd709eb6bf646ab996526ad94a0b2.jpg',
+    emoji: '🍗',
+    colors: ['#365314', '#84cc16'],
+    tip: 'Спокойствие, только спокойствие.',
+    slots: [{ label: 'Реплика Гуса', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'ronaldo',
+    title: 'Роналду',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/7e7b30bfcc0d1c78e68f6f12b13c41e8.jpg',
+    emoji: '⚽',
+    colors: ['#14532d', '#22c55e'],
+    tip: 'Что написано на бумажке.',
+    slots: [{ label: 'Надпись на бумажке', position: 'center' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'volturi',
+    title: 'Вольтури',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/30e059f0b736ab2c72caf617060765d7.jpg',
+    emoji: '⚔️',
+    colors: ['#450a0a', '#b91c1c'],
+    tip: 'Совет собрался, вопросы есть.',
+    slots: [
+      { label: 'Первый', position: 'top' },
+      { label: 'Второй', position: 'bottom' }
+    ],
+    botLines: BOT_PAIRS
+  },
+  {
+    id: 'bed',
+    title: 'Пара в постели',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/add901e2ef4e71418c687785722d7abd.jpg',
+    emoji: '🛏️',
+    colors: ['#1e40af', '#60a5fa'],
+    tip: 'О чём он думает.',
+    slots: [{ label: 'Мысль', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'toystory',
+    title: 'Базз и Вуди',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/ef065132ef2532c41d95fab7ec82ff77.jpg',
+    emoji: '🤠',
+    colors: ['#4c1d95', '#a855f7'],
+    tip: 'Два взгляда на одну ситуацию.',
+    slots: [
+      { label: 'Базз', position: 'top' },
+      { label: 'Вуди', position: 'bottom' }
+    ],
+    botLines: BOT_PAIRS
+  },
+  {
+    id: 'confucius',
+    title: 'Конфуций',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/3d0534819fb938ee3cf5dbe1b3467493.jpg',
+    emoji: '🧘',
+    colors: ['#44403c', '#a8a29e'],
+    tip: 'Мудрость дня.',
+    slots: [{ label: 'Мудрость', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'laptop',
+    title: 'Ноутбук и молоток',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/e6d6ee3434f7e5131474528b2e2bc9b2.jpg',
+    emoji: '💻',
+    colors: ['#0f172a', '#3b82f6'],
+    tip: 'Когда техника не слушается.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
   }
 ];
