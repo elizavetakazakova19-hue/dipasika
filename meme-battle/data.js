@@ -44,13 +44,14 @@ window.TEMPLATES = [
   {
     id: 'catwoman',
     title: 'Кот и хозяйка',
-    layout: 'row',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/6908411ee6fbbe9949a97d63567d41bc.jpg',
+    emoji: '😾',
     colors: ['#ffb347', '#ff5f6d'],
     tip: 'Кот оправдывается, хозяйка кричит.',
-    panels: [{ emoji: '😾' }, { emoji: '👩‍🦰' }],
     slots: [
-      { label: 'Кот оправдывается', placeholder: 'что говорит кот' },
-      { label: 'Хозяйка кричит', placeholder: 'что кричит хозяйка' }
+      { label: 'Кот оправдывается', placeholder: 'что говорит кот', position: 'bottom' },
+      { label: 'Хозяйка кричит', placeholder: 'что кричит хозяйка', position: 'top' }
     ],
     botLines: [
       ['Я не трогал цветок', 'Ты сожрал цветок'],
@@ -64,13 +65,14 @@ window.TEMPLATES = [
   {
     id: 'thisisfine',
     title: 'Всё нормально',
-    layout: 'row',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/fcceb45254a43bb9707d8ac84fa6c816.jpg',
+    emoji: '🐶',
     colors: ['#ff7b00', '#b91c1c'],
     tip: 'Всё горит, но «это нормально».',
-    panels: [{ emoji: '🔥' }, { emoji: '🐶' }],
     slots: [
-      { label: 'Что горит', placeholder: 'что происходит' },
-      { label: 'Собака говорит', placeholder: '«всё нормально»' }
+      { label: 'Что горит', placeholder: 'что происходит', position: 'top' },
+      { label: 'Собака говорит', placeholder: '«всё нормально»', position: 'bottom' }
     ],
     botLines: [
       ['Дедлайн завтра', 'Всё под контролем'],
@@ -104,11 +106,12 @@ window.TEMPLATES = [
   {
     id: 'stonks',
     title: 'Стонкс',
-    layout: 'single',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/6a5cb05cc89ed49090000fd51859afcf.jpg',
+    emoji: '📈',
     colors: ['#0ea5e9', '#22c55e'],
     tip: 'Подпись к графику, который всегда растёт.',
-    panels: [{ emoji: '📈' }],
-    slots: [{ label: 'Подпись к мему', placeholder: 'например: прибыль растёт' }],
+    slots: [{ label: 'Подпись к мему', placeholder: 'например: прибыль растёт', position: 'bottom' }],
     botLines: [
       ['STONKS'],
       ['Купил акции на все деньги'],
@@ -120,11 +123,12 @@ window.TEMPLATES = [
   {
     id: 'cryingcat',
     title: 'Плачущий кот',
-    layout: 'single',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/94b6be10fd5238b7c9a0dfa4b9a89b45.jpg',
+    emoji: '😿',
     colors: ['#6b7280', '#3b82f6'],
     tip: 'Что пишет кот в сообщении.',
-    panels: [{ emoji: '😿' }],
-    slots: [{ label: 'Сообщение кота', placeholder: 'например: ты не отвечаешь' }],
+    slots: [{ label: 'Сообщение кота', placeholder: 'например: ты не отвечаешь', position: 'bottom' }],
     botLines: [
       ['Ты не отвечаешь четыре минуты'],
       ['Я так и знал'],
@@ -136,11 +140,12 @@ window.TEMPLATES = [
   {
     id: 'leo',
     title: 'Смеющийся Лео',
-    layout: 'single',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/755b06672cf17661288eb0fff834a4ce.jpg',
+    emoji: '🍷',
     colors: ['#f59e0b', '#ef4444'],
     tip: 'Над чем смеётся человек с бокалом.',
-    panels: [{ emoji: '🍷' }],
-    slots: [{ label: 'Над чем смеётся', placeholder: 'например: мой план на день' }],
+    slots: [{ label: 'Над чем смеётся', placeholder: 'например: мой план на день', position: 'bottom' }],
     botLines: [
       ['Мой план на день'],
       ['Слово «быстро» в задачах'],
@@ -168,13 +173,14 @@ window.TEMPLATES = [
   {
     id: 'panic',
     title: 'Паника',
-    layout: 'row',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/c6e05e03c70c4ce3b8eb45b9ab26fa12.jpg',
+    emoji: '🏃',
     colors: ['#22d3ee', '#a855f7'],
     tip: 'Спокойствие и паника на одном меме.',
-    panels: [{ emoji: '🧍' }, { emoji: '🏃' }],
     slots: [
-      { label: 'Спокойный', placeholder: '«всё успею»' },
-      { label: 'Паника', placeholder: '«дедлайн вчера»' }
+      { label: 'Спокойный', placeholder: '«всё успею»', position: 'top' },
+      { label: 'Паника', placeholder: '«дедлайн вчера»', position: 'bottom' }
     ],
     botLines: [
       ['Задача на 10 минут', 'Задача на 10 минут, прошло 3 часа'],
@@ -201,6 +207,85 @@ window.TEMPLATES = [
       ['Кинуть палку', 'Кинуть задачу на другого'],
       ['Быть обезьяной', 'Быть менеджером'],
       ['Эволюция', 'Планёрка на час']
+    ]
+  },
+  {
+    id: 'sharikov',
+    title: 'Шариков',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/2d36e76effb7356349edde43265194c3.jpg',
+    emoji: '🐕',
+    colors: ['#8b5e3c', '#2b2118'],
+    tip: 'Что говорит Шариков.',
+    slots: [
+      { label: 'Реплика Шарикова', placeholder: 'например: взять всё и поделить', position: 'bottom' }
+    ],
+    botLines: [
+      ['Взять всё и поделить'],
+      ['Я не хуже других'],
+      ['Документ у меня есть'],
+      ['Мы с вами ещё поговорим'],
+      ['Я — Шариков, я всё могу']
+    ]
+  },
+  {
+    id: 'pool',
+    title: 'Пловец и скелет',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/7c65675c38e4611fda7bf29b869b81ad.jpg',
+    emoji: '🌊',
+    colors: ['#0ea5e9', '#0b3b5a'],
+    tip: 'Сверху — как держишься, снизу — что под водой.',
+    slots: [
+      { label: 'На поверхности', placeholder: 'как дела на самом деле', position: 'top' },
+      { label: 'Под водой', placeholder: 'что скрыто', position: 'bottom' }
+    ],
+    botLines: [
+      ['Отпуск на море', 'Третий день отпуска'],
+      ['Держусь на плаву', 'Уже давно не держусь'],
+      ['Всё под контролем', 'Скелет уже на дне'],
+      ['Плыву к цели', 'Течение несёт обратно'],
+      ['Я справляюсь', 'Скелет сомневается']
+    ]
+  },
+  {
+    id: 'button',
+    title: 'Две кнопки',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/1a33e4f0151d80b80e32ee57ee694b4f.jpg',
+    emoji: '🔴',
+    colors: ['#ef4444', '#1e293b'],
+    tip: 'Верхняя кнопка и нижняя — что выберешь.',
+    slots: [
+      { label: 'Верхняя кнопка', placeholder: 'первый вариант', position: 'top' },
+      { label: 'Нижняя кнопка', placeholder: 'второй вариант', position: 'bottom' }
+    ],
+    botLines: [
+      ['Нажать сейчас', 'Нажать потом'],
+      ['Сделать самому', 'Позвать на помощь'],
+      ['Ответить сразу', 'Прочитать и забыть'],
+      ['Согласиться', 'Отложить на завтра'],
+      ['Нажать красную', 'Нажать синюю']
+    ]
+  },
+  {
+    id: 'nagiev',
+    title: 'Нагиев с бумажкой',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/6f4d78a039eeb2d2676aa48a3d542e65.jpg',
+    emoji: '📄',
+    colors: ['#1f2937', '#f59e0b'],
+    tip: 'Что написано на бумажке.',
+    slots: [
+      { label: 'Что на бумажке', placeholder: 'например: премия согласована', position: 'center' }
+    ],
+    botLines: [
+      ['Всё согласовано'],
+      ['Премия одобрена'],
+      ['Отпуск подписан'],
+      ['Так написано в ТЗ'],
+      ['Это официально'],
+      ['Проверено юристами']
     ]
   }
 ];

@@ -62,6 +62,12 @@
     return copy;
   }
 
+  function pickTemplates(count) {
+    const photos = navigator.onLine === false ? [] : window.TEMPLATES.filter(function (item) { return item.image; });
+    const source = photos.length >= count ? photos : window.TEMPLATES;
+    return shuffle(source).slice(0, count);
+  }
+
   function playerById(id) {
     return state.players.find(function (p) { return p.id === id; });
   }
@@ -110,7 +116,46 @@
     node.classList.toggle('is-tiny', text.length > 52);
   }
 
+  function buildPhotoCard(template, captions) {
+    const figure = el('figure', 'meme meme--photo');
+    figure.dataset.template = template.id;
+    figure.style.setProperty('--c1', template.colors[0]);
+    figure.style.setProperty('--c2', template.colors[1]);
+
+    const photo = el('div', 'meme__photo');
+    photo.dataset.emoji = template.emoji || '🖼️';
+
+    const image = document.createElement('img');
+    image.src = template.image;
+    image.alt = template.title || '';
+    image.loading = 'lazy';
+    image.referrerPolicy = 'no-referrer';
+    image.addEventListener('error', function () {
+      photo.classList.add('is-fallback');
+      image.remove();
+    });
+    photo.append(image);
+
+    (template.slots || []).forEach(function (slot, index) {
+      const position = slot.position || (index === 0 && template.slots.length > 1 ? 'top' : 'bottom');
+      const node = el('span', 'meme__photo-text is-' + position);
+      const text = captions && captions[index] ? String(captions[index]) : '';
+      if (text) {
+        node.textContent = text;
+        fitCaption(node, text);
+      } else {
+        node.classList.add('is-empty');
+      }
+      photo.append(node);
+    });
+
+    figure.append(photo);
+    return figure;
+  }
+
   function buildMemeCard(template, captions) {
+    if (template.image) return buildPhotoCard(template, captions);
+
     const figure = el('figure', 'meme');
     figure.dataset.template = template.id;
     figure.style.setProperty('--c1', template.colors[0]);
@@ -334,7 +379,7 @@
       error.hidden = true;
       state.run += 1;
       state.players = players;
-      state.templates = shuffle(window.TEMPLATES).slice(0, state.rounds);
+      state.templates = pickTemplates(state.rounds);
       state.round = 0;
       state.usedLines = new Map();
       startRound();
@@ -475,7 +520,7 @@
     form.append(el('h1', 'write__title screen__title', 'Подпиши мем'));
     form.append(el('p', 'write__hint', template.tip));
 
-    const captionNodes = card.querySelectorAll('.meme__caption');
+    const captionNodes = card.querySelectorAll('.meme__caption, .meme__photo-text');
     const fields = [];
 
     template.slots.forEach(function (slot, index) {
@@ -832,7 +877,7 @@
     again.addEventListener('click', function () {
       state.run += 1;
       state.players.forEach(function (player) { player.score = 0; });
-      state.templates = shuffle(window.TEMPLATES).slice(0, state.rounds);
+      state.templates = pickTemplates(state.rounds);
       state.round = 0;
       state.usedLines = new Map();
       startRound();
