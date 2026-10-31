@@ -541,9 +541,9 @@
 
     setTimeout(function () {
       if (S.connecting) {
-        failLanding('Комната не отвечает. Убедитесь, что хост держит страницу открытой, и попробуйте снова.');
+        failLanding('Не удалось соединиться с комнатой. Проверьте, что хост держит вкладку открытой. Если сеть блокирует прямое соединение, попробуйте подключиться к той же Wi-Fi сети.');
       }
-    }, 15000);
+    }, 25000);
   }
 
   function guestOnData(msg) {
@@ -881,7 +881,6 @@
   function startGame() {
     const room = S.room;
     if (!room || !S.isHost || room.phase !== 'lobby') return;
-    room.players = room.players.filter(function (player) { return player.isBot || player.connected; });
     if (room.players.length < MIN_PLAYERS) {
       toast('Нужно хотя бы три участника: позовите друга или добавьте бота.');
       pushState();
@@ -956,7 +955,6 @@
   function playAgain() {
     const room = S.room;
     if (!room || room.phase !== 'final') return;
-    room.players = room.players.filter(function (player) { return player.isBot || player.connected; });
     room.players.forEach(function (player) { player.score = 0; });
     if (room.players.length < MIN_PLAYERS) {
       room.phase = 'lobby';
