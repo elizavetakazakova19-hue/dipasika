@@ -25,6 +25,7 @@
     rounds: 3,
     players: [],
     round: 0,
+    showIndex: 0,
     templates: [],
     template: null,
     memes: [],
@@ -184,11 +185,7 @@
 
   function gamebar(player, action) {
     const bar = el('header', 'gamebar');
-    bar.append(el(
-      'span',
-      'gamebar__round',
-      'Раунд ' + (state.round + 1) + ' из ' + state.rounds + ' · мем «' + state.template.title + '»'
-    ));
+    bar.append(el('span', 'gamebar__round', 'У каждого свой мем'));
     if (player) {
       const who = el('span', 'gamebar__who');
       who.append(el('span', 'gamebar__avatar', player.avatar));
@@ -322,36 +319,13 @@
 
     refreshRows();
     screen.append(playersPanel);
-
-    const roundsPanel = el('section', 'panel');
-    const roundsHead = el('div', 'panel__head');
-    roundsHead.append(el('h2', 'panel__title', 'Сколько раундов'), el('span', 'panel__note', 'каждый — новый мем'));
-    roundsPanel.append(roundsHead);
-
-    const segmented = el('div', 'segmented');
-    segmented.setAttribute('role', 'group');
-    segmented.setAttribute('aria-label', 'Количество раундов');
-    [1, 2, 3, 4, 5].forEach(function (count) {
-      const button = el('button', 'segmented__btn', String(count));
-      button.type = 'button';
-      button.setAttribute('aria-pressed', String(state.rounds === count));
-      button.addEventListener('click', function () {
-        state.rounds = count;
-        Array.prototype.forEach.call(segmented.children, function (child) {
-          child.setAttribute('aria-pressed', String(child === button));
-        });
-      });
-      segmented.append(button);
-    });
-    roundsPanel.append(segmented);
-    roundsPanel.append(el(
+    screen.append(el(
       'p',
       'panel__hint',
-      'Вас двое? Добавьте бота: он сочиняет подписи сам и голосует наравне со всеми.'
+      'Каждый получит свой мем и подпишет его. Потом смотрим все мемы по очереди.'
     ));
-    screen.append(roundsPanel);
 
-    const startButton = el('button', 'btn btn--big start-btn', 'Начать баттл →');
+    const startButton = el('button', 'btn btn--big start-btn', 'Начать игру →');
     startButton.type = 'button';
     startButton.addEventListener('click', function () {
       const players = state.setup.map(function (player, index) {
@@ -367,7 +341,7 @@
 
       if (players.length < MIN_PLAYERS) {
         error.hidden = false;
-        error.textContent = 'Нужно хотя бы три участника — иначе голосование закончится ничьей.';
+        error.textContent = 'Нужно хотя бы три участника — каждому достанется свой мем.';
         return;
       }
       if (!players.some(function (p) { return !p.isBot; })) {
@@ -379,7 +353,7 @@
       error.hidden = true;
       state.run += 1;
       state.players = players;
-      state.templates = pickTemplates(state.rounds);
+      state.templates = pickTemplates(state.players.length);
       state.round = 0;
       state.usedLines = new Map();
       startRound();
@@ -401,18 +375,20 @@
   /* ---------- игровой раунд ---------- */
 
   function startRound() {
-    state.template = state.templates[state.round];
+    state.templates = pickTemplates(state.players.length);
     state.memes = state.players.map(function (player, index) {
+      const template = state.templates[index] || state.templates[0];
       return {
         id: 'm' + index,
         playerId: player.id,
-        captions: new Array(state.template.slots.length).fill(''),
+        templateId: template.id,
+        captions: new Array(template.slots.length).fill(''),
         votes: []
       };
     });
     state.writeQueue = state.players.slice();
     state.writeIndex = 0;
-    state.usedLines.set(state.template.id, new Set());
+    state.usedLines = new Map();
     beginWriteTurn();
   }
 
@@ -420,9 +396,54 @@
     return state.memes.find(function (meme) { return meme.playerId === playerId; });
   }
 
+  function templateById(id) {
+    return window.TEMPLATES.find(function (item) { return item.id === id; }) || window.TEMPLATES[0];
+  }
+
+  function startShowcase() {
+    state.showIndex = 0;
+    renderShowcase();
+  }
+
+  function renderShowcase() {
+    const meme = state.memes[state.showIndex];
+    if (!meme) {
+      renderFinal();
+      return;
+    }
+    const player = playerById(meme.playerId) || { name: 'Игрок', avatar: '🙂' };
+    const template = templateById(meme.templateId);
+    const isLast = state.showIndex + 1 >= state.memes.length;
+
+    const screen = el('section', 'screen screen--showcase');
+    screen.append(gamebar(player, 'показ'));
+
+    const box = el('div', 'showcase');
+    box.append(el('p', 'kicker', 'мем ' + (state.showIndex + 1) + ' из ' + state.memes.length));
+    box.append(el('h1', 'showcase__title screen__title', 'Мем ' + player.name));
+    const card = buildMemeCard(template, meme.captions);
+    card.classList.add('showcase__card');
+    box.append(card);
+
+    const next = el('button', 'btn btn--big showcase__next', isLast ? 'Финал →' : 'Дальше →');
+    next.type = 'button';
+    next.addEventListener('click', function () {
+      if (isLast) {
+        renderFinal();
+        return;
+      }
+      state.showIndex += 1;
+      renderShowcase();
+    });
+    box.append(next);
+
+    screen.append(box);
+    setScreen(screen);
+  }
+
   function beginWriteTurn() {
     if (state.writeIndex >= state.writeQueue.length) {
-      startVoting();
+      startShowcase();
       return;
     }
     const player = state.writeQueue[state.writeIndex];
@@ -445,9 +466,9 @@
   }
 
   function fillBotCaptions(player) {
-    const template = state.template;
     const meme = memeFor(player.id);
     if (!meme) return;
+    const template = templateById(meme.templateId);
     const used = state.usedLines.get(template.id) || new Set();
     let index = -1;
     for (let attempt = 0; attempt < 30; attempt += 1) {
@@ -501,9 +522,9 @@
   }
 
   function showWriteScreen(player) {
-    const template = state.template;
     const meme = memeFor(player.id);
     if (!meme) return;
+    const template = templateById(meme.templateId);
 
     const screen = el('section', 'screen screen--write');
     screen.append(gamebar(player, 'пишет'));
@@ -844,41 +865,27 @@
 
   function renderFinal() {
     state.run += 1;
-    const sorted = state.players.slice().sort(function (a, b) { return b.score - a.score; });
-    const best = sorted.length ? sorted[0].score : 0;
-    const winners = sorted.filter(function (player) { return player.score === best; });
-    const medals = ['🥇', '🥈', '🥉'];
-
     const screen = el('section', 'screen screen--final');
     const hero = el('div', 'final__hero');
-    hero.append(el('span', 'final__crown', winners.length > 1 ? '🤝' : '🏆'));
-    hero.append(el('p', 'kicker', winners.length > 1 ? 'ничья, оба хороши' : 'победитель баттла'));
-    hero.append(el('h1', 'final__name screen__title', winners.map(function (p) { return p.name; }).join(' и ')));
-    hero.append(el('p', 'final__score', pointsLabel(best)));
+    hero.append(el('span', 'final__crown', '🎬'));
+    hero.append(el('p', 'kicker', 'это все мемы'));
+    hero.append(el('h1', 'final__name screen__title', 'Показ окончен'));
+    hero.append(el('p', 'final__score', 'Каждый подписал свой мем — и все его увидели.'));
     screen.append(hero);
 
-    const table = el('ol', 'scores scores--final');
-    let place = 0;
-    sorted.forEach(function (player, index) {
-      if (index === 0 || player.score !== sorted[index - 1].score) place = index + 1;
-      const row = el('li', 'score' + (place === 1 ? ' is-top' : ''));
-      const medal = place <= 3 && player.score > 0 ? medals[place - 1] : String(place);
-      row.append(el('span', 'score__place', medal));
-      row.append(el('span', 'score__avatar', player.avatar));
-      row.append(el('span', 'score__name', player.name));
-      row.append(el('span', 'score__points', String(player.score)));
-      table.append(row);
+    const players = el('div', 'final__players');
+    state.players.forEach(function (player) {
+      const chip = el('span', 'waiting__person');
+      chip.append(el('span', 'waiting__avatar', player.avatar));
+      chip.append(el('span', null, player.name));
+      players.append(chip);
     });
-    screen.append(table);
+    screen.append(players);
 
     const actions = el('div', 'final__actions');
     const again = el('button', 'btn btn--big', 'Ещё раз →');
     again.type = 'button';
     again.addEventListener('click', function () {
-      state.run += 1;
-      state.players.forEach(function (player) { player.score = 0; });
-      state.templates = pickTemplates(state.rounds);
-      state.round = 0;
       state.usedLines = new Map();
       startRound();
     });
@@ -889,22 +896,6 @@
 
     actions.append(again, restart);
     screen.append(actions);
-
-    const share = el('button', 'share', 'Скопировать результат');
-    share.type = 'button';
-    share.addEventListener('click', function () {
-      const text = 'Мем-баттл: ' + winners.map(function (p) { return p.name + ' — ' + p.score; }).join(', ') + ' очк.';
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () {
-          toast('Результат скопирован');
-        }).catch(function () {
-          toast('Не получилось скопировать');
-        });
-      } else {
-        toast('Буфер обмена недоступен');
-      }
-    });
-    screen.append(share);
 
     setScreen(screen);
     launchConfetti();

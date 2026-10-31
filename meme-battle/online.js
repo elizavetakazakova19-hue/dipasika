@@ -248,8 +248,9 @@
   function gamebar(snapshot, action) {
     const bar = el('header', 'gamebar');
     const round = el('span', 'gamebar__round');
-    round.textContent = 'Раунд ' + (snapshot.round + 1) + ' из ' + snapshot.rounds +
-      (snapshot.templateId ? ' · мем «' + templateById(snapshot.templateId).title + '»' : '');
+    round.textContent = snapshot.phase === 'showcase'
+      ? 'Показ мемов'
+      : 'У каждого свой мем';
     bar.append(round);
 
     const who = el('span', 'gamebar__who');
@@ -347,14 +348,15 @@
     intro.append(el(
       'p',
       'hero__lead',
-      'Создайте комнату и отправьте друзьям ссылку — каждый играет со своего телефона. Подписи, голосование и очки синхронизируются сами.'
+      'Создайте комнату и отправьте друзьям ссылку — каждый играет со своего телефона. Каждому достанется свой мем: подпишите его, а потом все вместе посмотрите, что получилось.'
     ));
 
     const steps = el('ol', 'steps');
     [
       ['Создаёте комнату', 'получаете короткий код из четырёх символов'],
       ['Зовёте друзей', 'они открывают ссылку и вводят имя'],
-      ['Играете', 'каждый пишет и голосует со своего устройства']
+      ['Подписываете мемы', 'каждому — свой мем, остальные не видят'],
+      ['Смотрите показ', 'хост листает мемы, все видят их на своих экранах']
     ].forEach(function (item, index) {
       const li = el('li', 'step');
       li.append(el('span', 'step__num', String(index + 1)));
@@ -517,7 +519,7 @@
     return {
       phase: 'lobby',
       round: 0,
-      rounds: 3,
+      rounds: 1,
       seq: 1,
       players: [{
         id: 'p1',
@@ -537,7 +539,8 @@
       points: {},
       winners: [],
       botsUsed: new Set(),
-      advancing: false
+      advancing: false,
+      showIndex: 0
     };
   }
 
@@ -799,7 +802,28 @@
     if (room.phase === 'writing') {
       const own = room.memes.find(function (meme) { return meme.playerId === player.id; });
       snapshot.yourMemeId = own ? own.id : null;
+      snapshot.yourTemplateId = own ? own.templateId : null;
+      snapshot.templateId = own ? own.templateId : null;
       snapshot.yourCaptions = own ? own.captions.slice() : [];
+    }
+
+    if (room.phase === 'showcase') {
+      const meme = room.memes[room.showIndex];
+      if (meme) {
+        const author = room.players.find(function (item) { return item.id === meme.playerId; });
+        snapshot.templateId = meme.templateId;
+        snapshot.showcase = {
+          index: room.showIndex,
+          total: room.memes.length,
+          templateId: meme.templateId,
+          captions: meme.captions.slice(),
+          playerId: meme.playerId,
+          playerName: author ? author.name : 'Игрок',
+          isLast: room.showIndex >= room.memes.length - 1
+        };
+      } else {
+        snapshot.showcase = null;
+      }
     }
 
     if (room.phase === 'voting' || room.phase === 'reveal') {
@@ -838,10 +862,11 @@
 
   function hostCaption(playerId, captions) {
     const room = S.room;
-    if (!room || room.phase !== 'writing' || !room.template) return;
+    if (!room || room.phase !== 'writing') return;
     const meme = room.memes.find(function (item) { return item.playerId === playerId; });
     if (!meme) return;
-    if (!Array.isArray(captions) || captions.length !== room.template.slots.length) return;
+    const template = templateById(meme.templateId);
+    if (!Array.isArray(captions) || captions.length !== template.slots.length) return;
     const clean = captions.map(function (value) { return cleanCaption(value); });
     if (clean.some(function (value) { return !value; })) return;
     meme.captions = clean;
@@ -876,28 +901,29 @@
     room.advancing = true;
     setTimeout(function () {
       if (!S.room || S.room !== room || room.phase !== 'writing') return;
-      beginVoting();
+      beginShowcase();
     }, 650);
   }
 
-  function beginVoting() {
+  function beginShowcase() {
     const room = S.room;
-    room.phase = 'voting';
+    room.phase = 'showcase';
     room.advancing = false;
+    room.showIndex = 0;
     room.memes = room.memes.filter(function (meme) { return room.submitted.has(meme.playerId); });
-    room.displayOrder = shuffle(room.memes.map(function (meme) { return meme.id; }));
-    room.voted = new Set();
-
-    room.players.filter(function (player) { return player.isBot; }).forEach(function (bot) {
-      const options = room.memes.filter(function (meme) { return meme.playerId !== bot.id; });
-      if (!options.length) return;
-      const choice = options[Math.floor(Math.random() * options.length)];
-      choice.votes.push(bot.id);
-      room.voted.add(bot.id);
-    });
-
     pushState();
-    maybeAdvanceVoting();
+  }
+
+  function showcaseNext() {
+    const room = S.room;
+    if (!room || !S.isHost || room.phase !== 'showcase') return;
+    if (room.showIndex + 1 < room.memes.length) {
+      room.showIndex += 1;
+      pushState();
+      return;
+    }
+    room.phase = 'final';
+    pushState();
   }
 
   function maybeAdvanceVoting() {
@@ -934,8 +960,8 @@
       return;
     }
     room.players.forEach(function (player) { player.score = 0; });
-    room.templates = pickTemplates(room.rounds);
     room.round = 0;
+    room.rounds = 1;
     S.confettiKey = '';
     startRound();
   }
@@ -943,12 +969,16 @@
   function startRound() {
     const room = S.room;
     room.phase = 'writing';
-    room.template = room.templates[room.round];
+    const chosen = pickTemplates(room.players.length);
+    room.templates = chosen;
+    room.template = chosen[0] || null;
     room.memes = room.players.map(function (player, index) {
+      const template = chosen[index] || chosen[0];
       return {
-        id: 'm' + room.round + '_' + index,
+        id: 'm' + index,
         playerId: player.id,
-        captions: new Array(room.template.slots.length).fill(''),
+        templateId: template.id,
+        captions: new Array(template.slots.length).fill(''),
         votes: []
       };
     });
@@ -958,6 +988,7 @@
     room.points = {};
     room.winners = [];
     room.advancing = false;
+    room.showIndex = 0;
     room.botsUsed = new Set();
     fillBotCaptions();
     pushState();
@@ -969,7 +1000,8 @@
     room.players.filter(function (player) { return player.isBot; }).forEach(function (bot) {
       const meme = room.memes.find(function (item) { return item.playerId === bot.id; });
       if (!meme) return;
-      const lines = room.template.botLines;
+      const template = templateById(meme.templateId);
+      const lines = template.botLines;
       let index = -1;
       for (let attempt = 0; attempt < 30; attempt += 1) {
         const candidate = Math.floor(Math.random() * lines.length);
@@ -1010,7 +1042,7 @@
       return;
     }
     room.round = 0;
-    room.templates = pickTemplates(room.rounds);
+    room.rounds = 1;
     S.confettiKey = '';
     startRound();
   }
@@ -1065,19 +1097,18 @@
   /* ---------- отрисовка состояния ---------- */
 
   function viewKey(snapshot) {
-    const roster = (snapshot.phase === 'lobby' || snapshot.phase === 'reveal' || snapshot.phase === 'final')
+    const roster = (snapshot.phase === 'lobby' || snapshot.phase === 'final')
       ? snapshot.players.map(function (player) {
         return player.id + player.name + (player.connected ? '1' : '0') + (player.isBot ? '1' : '0');
       }).join(',')
       : '';
     return [
       snapshot.phase,
-      snapshot.round,
-      snapshot.rounds,
-      snapshot.templateId,
+      snapshot.yourTemplateId,
       snapshot.yourMemeId,
+      snapshot.showcase ? snapshot.showcase.index : '',
+      snapshot.showcase ? snapshot.showcase.playerId : '',
       isDone(snapshot, 'submittedIds', snapshot.you.id) ? 'sub' : '',
-      isDone(snapshot, 'votedIds', snapshot.you.id) ? 'voted' : '',
       roster
     ].join('|');
   }
@@ -1113,10 +1144,7 @@
     else if (snapshot.phase === 'writing') {
       if (isDone(snapshot, 'submittedIds', snapshot.you.id)) renderWaitingWrite(snapshot);
       else renderWrite(snapshot);
-    } else if (snapshot.phase === 'voting') {
-      if (isDone(snapshot, 'votedIds', snapshot.you.id)) renderWaitingVote(snapshot);
-      else renderVote(snapshot);
-    } else if (snapshot.phase === 'reveal') renderReveal(snapshot);
+    } else if (snapshot.phase === 'showcase') renderShowcase(snapshot);
     else if (snapshot.phase === 'final') renderFinal(snapshot);
   }
 
@@ -1175,30 +1203,6 @@
 
     const side = el('div', 'lobby-side');
 
-    const roundsPanel = el('section', 'panel');
-    const roundsHead = el('div', 'panel__head');
-    roundsHead.append(
-      el('h2', 'panel__title', 'Раунды'),
-      el('span', 'panel__note', S.isHost ? 'каждый — новый мем' : 'решает хост')
-    );
-    roundsPanel.append(roundsHead);
-    if (S.isHost) {
-      const segmented = el('div', 'segmented');
-      segmented.setAttribute('role', 'group');
-      segmented.setAttribute('aria-label', 'Количество раундов');
-      [1, 2, 3, 4, 5].forEach(function (count) {
-        const option = el('button', 'segmented__btn', String(count));
-        option.type = 'button';
-        option.setAttribute('aria-pressed', String(snapshot.rounds === count));
-        option.addEventListener('click', function () { setRounds(count); });
-        segmented.append(option);
-      });
-      roundsPanel.append(segmented);
-    } else {
-      roundsPanel.append(el('p', 'status-line', 'В этой игре раундов: ' + snapshot.rounds + '.'));
-    }
-    side.append(roundsPanel);
-
     const actionPanel = el('section', 'panel');
     if (S.isHost) {
       const start = btn('Начать игру →', 'btn btn--big', startGame);
@@ -1226,7 +1230,7 @@
   }
 
   function renderWrite(snapshot) {
-    const template = templateById(snapshot.templateId);
+    const template = templateById(snapshot.yourTemplateId || snapshot.templateId);
     const screen = el('section', 'screen screen--write');
     screen.append(gamebar(snapshot, 'пишет'));
 
@@ -1328,6 +1332,34 @@
     box.append(people);
     fillPeople(people, snapshot, 'submittedIds');
     screen.append(box);
+    setScreen(screen);
+  }
+
+  function renderShowcase(snapshot) {
+    const show = snapshot.showcase;
+    if (!show) {
+      renderWaitingWrite(snapshot);
+      return;
+    }
+    const template = templateById(show.templateId);
+    const screen = el('section', 'screen screen--showcase');
+    screen.append(gamebar(snapshot, S.isHost ? 'ведёт показ' : 'смотрит'));
+
+    const body = el('div', 'showcase');
+    body.append(el('p', 'kicker', 'мем ' + (show.index + 1) + ' из ' + show.total));
+    body.append(el('h1', 'showcase__title screen__title', 'Мем ' + show.playerName));
+    const card = buildMemeCard(template, show.captions);
+    card.classList.add('showcase__card');
+    body.append(card);
+
+    if (S.isHost) {
+      body.append(btn(show.isLast ? 'Финал →' : 'Дальше →', 'btn btn--big showcase__next', showcaseNext));
+      body.append(el('p', 'status-line', 'Все видят этот мем. Нажмите «Дальше», когда насмотритесь.'));
+    } else {
+      body.append(el('p', 'showcase__hint', 'Хост листает мемы — смотрите вместе.'));
+    }
+
+    screen.append(body);
     setScreen(screen);
   }
 
@@ -1480,34 +1512,22 @@
   }
 
   function renderFinal(snapshot) {
-    const sorted = snapshot.players.slice().sort(function (a, b) { return b.score - a.score; });
-    const best = sorted.length ? sorted[0].score : 0;
-    const winners = snapshot.players.filter(function (player) {
-      return (snapshot.winners || []).indexOf(player.id) !== -1;
-    });
-    const medals = ['🥇', '🥈', '🥉'];
-
     const screen = el('section', 'screen screen--final');
     const hero = el('div', 'final__hero');
-    hero.append(el('span', 'final__crown', winners.length > 1 ? '🤝' : '🏆'));
-    hero.append(el('p', 'kicker', winners.length > 1 ? 'ничья, оба хороши' : 'победитель баттла'));
-    hero.append(el('h1', 'final__name screen__title', winners.map(function (player) { return player.name; }).join(' и ') || 'Никто'));
-    hero.append(el('p', 'final__score', pointsLabel(best)));
+    hero.append(el('span', 'final__crown', '🎬'));
+    hero.append(el('p', 'kicker', 'это все мемы'));
+    hero.append(el('h1', 'final__name screen__title', 'Показ окончен'));
+    hero.append(el('p', 'final__score', 'Каждый подписал свой мем — и все его увидели.'));
     screen.append(hero);
 
-    const table = el('ol', 'scores scores--final');
-    let place = 0;
-    sorted.forEach(function (player, index) {
-      if (index === 0 || player.score !== sorted[index - 1].score) place = index + 1;
-      const row = el('li', 'score' + (place === 1 ? ' is-top' : ''));
-      const medal = place <= 3 && player.score > 0 ? medals[place - 1] : String(place);
-      row.append(el('span', 'score__place', medal));
-      row.append(el('span', 'score__avatar', player.avatar || '🙂'));
-      row.append(el('span', 'score__name', player.name));
-      row.append(el('span', 'score__points', String(player.score)));
-      table.append(row);
+    const players = el('div', 'final__players');
+    snapshot.players.forEach(function (player) {
+      const chip = el('span', 'waiting__person');
+      chip.append(el('span', 'waiting__avatar', player.avatar || '🙂'));
+      chip.append(el('span', null, player.name));
+      players.append(chip);
     });
-    screen.append(table);
+    screen.append(players);
 
     if (S.isHost) {
       const actions = el('div', 'final__actions');
@@ -1524,7 +1544,7 @@
 
     setScreen(screen);
 
-    const confettiKey = snapshot.round + '|' + winners.length;
+    const confettiKey = 'final|' + snapshot.players.length;
     if (S.confettiKey !== confettiKey) {
       S.confettiKey = confettiKey;
       launchConfetti();

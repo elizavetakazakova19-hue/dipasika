@@ -1927,3 +1927,46 @@ body {
     backdrop-filter: none;
   }
 }
+
+/* ---------- показ мемов ---------- */
+
+.screen--showcase {
+  justify-content: flex-start;
+}
+
+.showcase {
+  width: min(680px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+}
+
+.showcase__title {
+  text-align: center;
+}
+
+.showcase__card {
+  width: 100%;
+  max-width: 560px;
+}
+
+.showcase__next {
+  width: 100%;
+  max-width: 420px;
+}
+
+.showcase__hint {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.final__players {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 18px auto 0;
+  max-width: 680px;
+}
