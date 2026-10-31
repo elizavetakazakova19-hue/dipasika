@@ -138,7 +138,7 @@
 
   function shareUrl() {
     const url = new URL(location.href);
-    url.search = '?room=' + S.code;
+    url.searchParams.set('room', S.code);
     url.hash = '';
     return url.href;
   }
@@ -553,7 +553,9 @@
       S.me = msg.state.you;
       S.code = msg.state.code;
       localStorage.setItem(SESSION_PREFIX + S.code, msg.state.you.id);
-      try { history.replaceState(null, '', '?room=' + S.code); } catch (error) {}
+      const params = new URLSearchParams(location.search);
+      params.set('room', S.code);
+      try { history.replaceState(null, '', '?' + params.toString()); } catch (error) {}
       applySnapshot(msg.state);
       return;
     }

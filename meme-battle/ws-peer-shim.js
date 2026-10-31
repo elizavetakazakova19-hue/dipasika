@@ -7,6 +7,15 @@
     return 'ws-' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6);
   }
 
+  function relayBase() {
+    const param = new URLSearchParams(location.search).get('server');
+    let base = param || (location.protocol + '//' + location.host);
+    if (!/^wss?:\/\//i.test(base)) {
+      base = (location.protocol === 'https:' ? 'wss://' : 'ws://') + base.replace(/^https?:\/\//i, '');
+    }
+    return base.replace(/\/+$/, '');
+  }
+
   function Connection(peer, remoteId) {
     this.peer = peer;
     this.remoteId = remoteId;
@@ -59,7 +68,7 @@
     this.destroyed = false;
 
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    this._socket = new WebSocket(protocol + '//' + location.host + '/ws?peer=' + encodeURIComponent(this.id));
+    this._socket = new WebSocket(relayBase() + '/ws?peer=' + encodeURIComponent(this.id));
     this._socket.onopen = () => {
       this._emit('open', this.id);
     };
