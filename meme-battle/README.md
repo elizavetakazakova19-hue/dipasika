@@ -71,14 +71,15 @@ npm start
    - Install command: пусто
    - Build command: пусто
    - Runtime: **Dynamic**
-   - Dynamic Entrypoint: `meme-battle/server/deno.js`
+   - Dynamic Entrypoint: `deno-relay.js`
    - Region: ближайший (например, Europe)
-3. Нажать **Create App** и дождаться сборки. Получится адрес вида `https://meme-battle-xxxx.deno.dev`.
-4. Открыть клиент со ссылкой на релей:
-   `https://elizavetakazakova19-hue.github.io/dipasika/meme-battle/relay.html?server=wss://meme-battle-xxxx.deno.dev`
-5. Эту ссылку отправлять друзьям: параметр `?server=` сохраняется в ссылке комнаты.
+3. Нажать **Create App** и дождаться сборки. Получится адрес вида `https://meme-battle-xxxx.deno.net`.
+4. Проверить `https://meme-battle-xxxx.deno.net/health` — должно вернуться `{"ok":true,"peers":0}`.
+5. Открыть клиент со ссылкой на релей:
+   `https://elizavetakazakova19-hue.github.io/dipasika/meme-battle/relay.html?server=wss://meme-battle-xxxx.deno.net`
+6. Эту ссылку отправлять друзьям: параметр `?server=` сохраняется в ссылке комнаты.
 
-Если новый Deno Deploy откажется запускать файл из подпапки (у него пока нет полноценной поддержки монорепозиториев), положите `deno.js` в корень отдельного репозитория и укажите его как entrypoint.
+`deno-relay.js` в корне репозитория — копия `meme-battle/server/deno.js`: новый Deno Deploy пока плохо работает с монорепозиториями, а файл в корне запускается без сюрпризов. Если консоль всё равно выбирает Static, переключите Runtime на Dynamic и укажите entrypoint вручную.
 
 Deno Deploy может запускать несколько изолированных инстансов, поэтому в редких случаях гость не увидит комнату. Если так случится — есть вариант с Cloudflare Workers (Durable Objects), где комната живёт в одном объекте.
 
