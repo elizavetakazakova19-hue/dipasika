@@ -65,14 +65,22 @@ npm start
 
 **Бесплатный деплой (Deno Deploy):**
 
-1. Открыть [dash.deno.com](https://dash.deno.com) → New Project → Deploy from GitHub → выбрать этот репозиторий.
-2. Entrypoint: `meme-battle/server/deno.js`.
-3. Получить адрес вида `https://meme-battle-xxxx.deno.dev`.
+1. Открыть [console.deno.com](https://console.deno.com) → **+ New App** → выбрать репозиторий `dipasika`.
+2. Нажать **Edit build config** и выставить:
+   - Framework preset: **No Preset**
+   - Install command: пусто
+   - Build command: пусто
+   - Runtime: **Dynamic**
+   - Dynamic Entrypoint: `meme-battle/server/deno.js`
+   - Region: ближайший (например, Europe)
+3. Нажать **Create App** и дождаться сборки. Получится адрес вида `https://meme-battle-xxxx.deno.dev`.
 4. Открыть клиент со ссылкой на релей:
    `https://elizavetakazakova19-hue.github.io/dipasika/meme-battle/relay.html?server=wss://meme-battle-xxxx.deno.dev`
 5. Эту ссылку отправлять друзьям: параметр `?server=` сохраняется в ссылке комнаты.
 
-Deno Deploy может запускать несколько изолированных инстансов, поэтому в редких случаях гость не увидит комнату. Если так случится — есть варианты с Render или Cloudflare Workers (Durable Objects), где комната живёт в одном объекте.
+Если новый Deno Deploy откажется запускать файл из подпапки (у него пока нет полноценной поддержки монорепозиториев), положите `deno.js` в корень отдельного репозитория и укажите его как entrypoint.
+
+Deno Deploy может запускать несколько изолированных инстансов, поэтому в редких случаях гость не увидит комнату. Если так случится — есть вариант с Cloudflare Workers (Durable Objects), где комната живёт в одном объекте.
 
 **Render (если открывается):**
 
