@@ -1,5 +1,6 @@
 /* Релей комнат для Deno Deploy: тот же протокол, что и server.js.
    Запуск локально: deno run --allow-net deno.js */
+const CLIENT_URL = 'https://elizavetakazakova19-hue.github.io/dipasika/meme-battle/relay.html';
 const peers = new Map();
 const links = new Map();
 
@@ -26,6 +27,11 @@ Deno.serve((request) => {
 
   if (url.pathname === '/health') {
     return Response.json({ ok: true, peers: peers.size });
+  }
+
+  if (url.pathname === '/' || url.pathname === '') {
+    const host = request.headers.get('host') || url.host;
+    return Response.redirect(CLIENT_URL + '?server=' + encodeURIComponent('wss://' + host), 302);
   }
 
   if (url.pathname !== '/ws') {
