@@ -85,6 +85,18 @@ npm start
 
 Deno Deploy может запускать несколько изолированных инстансов, поэтому в редких случаях гость не увидит комнату. Если так случится — есть вариант с Cloudflare Workers (Durable Objects), где комната живёт в одном объекте.
 
+У бесплатного Deno Deploy есть лимиты (10 CPU-часов и 150 GiB-часов памяти в месяц). WebSocket-релей держит приложение загруженным, поэтому квота может закончиться — приложение ответит `503 USAGE_EXCEEDED` и будет приостановлено до сброса квоты. Для постоянной игры лучше Cloudflare Workers: там WebSocket-соединения «засыпают» и не тратят память.
+
+**Cloudflare Workers (бесплатно, без засыпания):**
+
+1. `cd meme-battle/server`.
+2. `npx wrangler login` — откроется браузер, войдите в бесплатный аккаунт Cloudflare.
+3. `npx wrangler deploy` — Wrangler соберёт `worker.js` и создаст Durable Object.
+4. Получится адрес вида `https://meme-battle-relay.<аккаунт>.workers.dev`.
+5. Открыть клиент: `https://elizavetakazakova19-hue.github.io/dipasika/meme-battle/relay.html?server=wss://meme-battle-relay.<аккаунт>.workers.dev`.
+
+Вся комната живёт в одном Durable Object `Relay`, поэтому хосты и гости всегда видят друг друга независимо от региона.
+
 **Render (если открывается):**
 
 1. New → Web Service → выбрать этот репозиторий.
@@ -167,6 +179,8 @@ Deno Deploy может запускать несколько изолирова�
 | `ws-peer-shim.js` | замена PeerJS поверх WebSocket для режима с релеем |
 | `server/` | Node.js-сервер: статика и релей комнат (`npm start`) |
 | `server/deno.js` | тот же релей для Deno Deploy |
+| `server/worker.js` | релей для Cloudflare Workers (Durable Object) |
+| `server/wrangler.toml` | конфигурация деплоя Cloudflare |
 | `app.js` | локальная игра: мемы каждому, передача телефона, показ |
 | `data.js` | шаблоны мемов, панели и заготовки реплик ботов |
 | `styles.css` | оформление обоих режимов |
