@@ -515,5 +515,267 @@ window.TEMPLATES = [
     tip: 'Когда техника не слушается.',
     slots: [{ label: 'Подпись', position: 'bottom' }],
     botLines: BOT_SINGLE
+  },
+  {
+    id: 'catclose',
+    title: 'Кот',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/277090e4ebe698abe516aef76680055a.jpg',
+    emoji: '🐱',
+    colors: ['#78350f', '#f59e0b'],
+    tip: 'О чём думает кот.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'generator',
+    title: 'Генератор мемов',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/42a53f4b1c68bbcf2d6b56501ce8fc0c.jpg',
+    emoji: '🧙',
+    colors: ['#312e81', '#8b5cf6'],
+    tip: 'Двое обсуждают мемы.',
+    slots: [
+      { label: 'Верхняя подпись', position: 'top' },
+      { label: 'Нижняя подпись', position: 'bottom' }
+    ],
+    botLines: BOT_PAIRS
+  },
+  {
+    id: 'tigerwolf',
+    title: 'Тигр и волк',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/818eae964a8f525662f0ca7c836278d5.jpg',
+    emoji: '🐯',
+    colors: ['#065f46', '#22c55e'],
+    tip: 'Кто здесь главный.',
+    slots: [
+      { label: 'Верхняя подпись', position: 'top' },
+      { label: 'Нижняя подпись', position: 'bottom' }
+    ],
+    botLines: BOT_PAIRS
+  },
+  {
+    id: 'prigozhin',
+    title: 'Пригожин',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/e54fe4d682e805b40160e235da77dd48.jpg',
+    emoji: '🕴️',
+    colors: ['#3f3f46', '#111827'],
+    tip: 'Что сказал человек в костюме.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'dora',
+    title: 'Дора',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/e9e029d4bb638ba6156361ffbe3e41f8.jpg',
+    emoji: '🎒',
+    colors: ['#7c2d12', '#f97316'],
+    tip: 'Дора нашла новый мем.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'shrug',
+    title: 'Раскрытые объятия',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/1032b95fe2e77ed29025446c06b7bfd0.jpg',
+    emoji: '🤷',
+    colors: ['#1e3a8a', '#3b82f6'],
+    tip: 'Когда всё равно.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'donkey',
+    title: 'Осёл',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/026dc751152d33593e7312999794e3df.jpg',
+    emoji: '🫏',
+    colors: ['#78350f', '#f59e0b'],
+    tip: 'Реплика осла.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'butterfly',
+    title: 'Это бабочка',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/8af83a0ceb8b10f521b128aa2319219f.jpg',
+    emoji: '🦋',
+    colors: ['#4c1d95', '#a855f7'],
+    tip: 'Что это на самом деле.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'coffee',
+    title: 'Кофе',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/8b573a00f15a78b02451c3d76a9c88e0.jpg',
+    emoji: '☕',
+    colors: ['#78350f', '#f59e0b'],
+    tip: 'Утро без кофе.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'catposter',
+    title: 'Кот и постер',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/f78a989aa83fde91849ac5fe66485d93.jpg',
+    emoji: '🐱',
+    colors: ['#0f766e', '#14b8a6'],
+    tip: 'Кот смотрит на кота.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'shufutinsky',
+    title: 'Шуфутинский',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/1c4870ed71fddd1a9d7ab05d4b5c273f.jpg',
+    emoji: '🎤',
+    colors: ['#450a0a', '#b91c1c'],
+    tip: 'Третье сентября близко.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'future',
+    title: 'Будущее',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/7ac2e4a7c7e397c22c5e69721062603e.jpg',
+    emoji: '🌆',
+    colors: ['#0f172a', '#3b82f6'],
+    tip: 'Каким будет завтра.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'shrek',
+    title: 'Шрек с камерой',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/b830f60dda7cb0cf8ba192c0bb7df331.jpg',
+    emoji: '📷',
+    colors: ['#365314', '#84cc16'],
+    tip: 'Шрек увидел что-то странное.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'skeletonbeach',
+    title: 'Скелет на пляже',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/2f2d06456c171cbad53704c46ed07efb.jpg',
+    emoji: '💀',
+    colors: ['#0ea5e9', '#0b3b5a'],
+    tip: 'Отпуск пошёл не по плану.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'phonecall',
+    title: 'Телефонный звонок',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/96b47dc56bccb08a5d742a4eeebea6b2.jpg',
+    emoji: '📞',
+    colors: ['#1f2937', '#6b7280'],
+    tip: 'Кто звонит и зачем.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'chimp',
+    title: 'Шимпанзе',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/098949f069ab374201c40086867b83a5.jpg',
+    emoji: '🐒',
+    colors: ['#78350f', '#a16207'],
+    tip: 'Что увидела обезьяна.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'denzel',
+    title: 'Дензел',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/9abaeb579cf8cceef07bf6b932fc162e.jpg',
+    emoji: '🕴️',
+    colors: ['#334155', '#94a3b8'],
+    tip: 'Суровый взгляд и реплика.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'twocats',
+    title: 'Два кота',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/ac41fa32d6f89dfb58c58a2554deed2f.jpg',
+    emoji: '🐱',
+    colors: ['#0f766e', '#22c55e'],
+    tip: 'Два кота и два мнения.',
+    slots: [
+      { label: 'Верхняя подпись', position: 'top' },
+      { label: 'Нижняя подпись', position: 'bottom' }
+    ],
+    botLines: BOT_PAIRS
+  },
+  {
+    id: 'gatsby',
+    title: 'Гэтсби',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/a66fd8b3dd4e2ff7098292ff3750ad3a.jpg',
+    emoji: '🍸',
+    colors: ['#422006', '#f59e0b'],
+    tip: 'Тост за что-нибудь.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'rick',
+    title: 'Рик и Морти',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/3dc46404927b227bdc35782d8e7df826.jpg',
+    emoji: '🌀',
+    colors: ['#065f46', '#22c55e'],
+    tip: 'Приключение на двадцать минут.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'spongebob',
+    title: 'Спанч Боб',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/5d30dffd61163504ef63d39bcb1d6078.jpg',
+    emoji: '🌈',
+    colors: ['#f59e0b', '#ef4444'],
+    tip: 'Воображение включилось.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'iceberg',
+    title: 'Айсберг',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/f0bbcf3cc131ee90e2c70e42a612335e.jpg',
+    emoji: '🧊',
+    colors: ['#0f172a', '#0ea5e9'],
+    tip: 'Что скрыто под водой.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
+  },
+  {
+    id: 'megamind',
+    title: 'Мегамозг',
+    layout: 'photo',
+    image: 'https://images.meme-arsenal.com/6e84dd040f6d402f43cff092d5304755.jpg',
+    emoji: '🧠',
+    colors: ['#312e81', '#8b5cf6'],
+    tip: 'Гениальный план Мегамозга.',
+    slots: [{ label: 'Подпись', position: 'bottom' }],
+    botLines: BOT_SINGLE
   }
 ];
